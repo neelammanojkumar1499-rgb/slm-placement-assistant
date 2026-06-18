@@ -1,0 +1,604 @@
+# Placement SLM (Small Language Model)
+
+## Project Overview
+
+Placement SLM is a Small Language Model project developed to demonstrate:
+
+* Small Language Models (SLMs)
+* LoRA Fine-Tuning
+* Model Training
+* Inference
+* Evaluation
+* Chatbot Deployment using Streamlit
+
+The model is trained on placement preparation question-answer pairs and acts as a Placement Preparation Assistant.
+
+---
+
+# Project Architecture
+
+```text
+Dataset
+   ↓
+Preprocessing
+   ↓
+DistilGPT2
+   ↓
+LoRA Fine-Tuning
+   ↓
+Training
+   ↓
+Adapter Saving
+   ↓
+Inference
+   ↓
+Streamlit Chatbot
+```
+
+---
+
+# Project Structure
+
+```text
+placement-slm/
+│
+├── data/
+│   ├── raw/
+│   │   └── placement_qa.json
+│   │
+│   └── processed/
+│       └── train.jsonl
+│
+├── models/
+│   ├── base/
+│   └── lora_adapter/
+│
+├── src/
+│   ├── config.py
+│   ├── preprocess.py
+│   ├── train.py
+│   ├── inference.py
+│   ├── evaluate.py
+│   └── utils.py
+│
+├── app/
+│   └── streamlit_app.py
+│
+├── outputs/
+│   ├── checkpoints/
+│   ├── logs/
+│   └── results/
+│
+├── requirements.txt
+├── README.md
+└── main.py
+```
+
+---
+
+# Technologies Used
+
+## Python
+
+Main programming language used for development.
+
+### Purpose
+
+* Data processing
+* Model training
+* Evaluation
+* Deployment
+
+---
+
+# Packages Used
+
+## 1. PyTorch
+
+```text
+torch>=2.2.0
+```
+
+### Purpose
+
+PyTorch is the deep learning framework used to train and run the language model.
+
+### Used For
+
+* Tensor operations
+* Gradient computation
+* Backpropagation
+* Model training
+
+### Example
+
+```python
+import torch
+
+x = torch.tensor([1,2,3])
+```
+
+---
+
+## 2. Transformers
+
+```text
+transformers>=4.40.0
+```
+
+### Purpose
+
+Provides pretrained language models.
+
+### Used For
+
+* DistilGPT2
+* Tokenizers
+* Training APIs
+
+### Example
+
+```python
+AutoModelForCausalLM.from_pretrained(
+    "distilgpt2"
+)
+```
+
+---
+
+## 3. Datasets
+
+```text
+datasets>=2.18.0
+```
+
+### Purpose
+
+Loads and manages training datasets.
+
+### Used For
+
+```python
+load_dataset()
+```
+
+---
+
+## 4. PEFT
+
+```text
+peft>=0.10.0
+```
+
+PEFT stands for Parameter Efficient Fine Tuning.
+
+### Purpose
+
+Provides LoRA implementation.
+
+### Used For
+
+```python
+LoraConfig
+get_peft_model
+```
+
+---
+
+## 5. TRL
+
+```text
+trl>=0.8.6
+```
+
+TRL stands for Transformer Reinforcement Learning.
+
+### Purpose
+
+Provides utilities for supervised fine-tuning and reinforcement learning.
+
+---
+
+## 6. Accelerate
+
+```text
+accelerate>=0.28.0
+```
+
+### Purpose
+
+Simplifies CPU/GPU training.
+
+### Features
+
+* Device management
+* Mixed precision support
+* Distributed training
+
+---
+
+## 7. BitsAndBytes
+
+```text
+bitsandbytes>=0.43.0
+```
+
+### Purpose
+
+Supports model quantization.
+
+### Features
+
+* 4-bit quantization
+* 8-bit quantization
+* Reduced memory usage
+
+---
+
+## 8. SentencePiece
+
+```text
+sentencepiece>=0.2.0
+```
+
+### Purpose
+
+Tokenizer backend used by many language models.
+
+---
+
+## 9. Protobuf
+
+```text
+protobuf>=4.25.3
+```
+
+### Purpose
+
+Data serialization library used by Transformers.
+
+---
+
+## 10. Streamlit
+
+```text
+streamlit>=1.32.0
+```
+
+### Purpose
+
+Creates a web interface for the chatbot.
+
+### Features
+
+* Chat UI
+* Input box
+* Conversation history
+
+---
+
+## 11. Pandas
+
+```text
+pandas>=2.2.0
+```
+
+### Purpose
+
+Data analysis and manipulation.
+
+---
+
+## 12. NumPy
+
+```text
+numpy>=1.26.0
+```
+
+### Purpose
+
+Mathematical and numerical computations.
+
+---
+
+## 13. Scikit-Learn
+
+```text
+scikit-learn>=1.4.0
+```
+
+### Purpose
+
+Machine learning utilities.
+
+### Examples
+
+* train_test_split
+* Evaluation utilities
+
+---
+
+## 14. tqdm
+
+```text
+tqdm>=4.66.0
+```
+
+### Purpose
+
+Displays progress bars during processing and training.
+
+---
+
+## 15. Evaluate
+
+```text
+evaluate>=0.4.1
+```
+
+### Purpose
+
+Model evaluation library.
+
+### Features
+
+* ROUGE
+* BLEU
+* Accuracy metrics
+
+---
+
+## 16. ROUGE Score
+
+```text
+rouge-score>=0.1.2
+```
+
+### Purpose
+
+Measures similarity between generated and expected answers.
+
+---
+
+## 17. Python Dotenv
+
+```text
+python-dotenv>=1.0.1
+```
+
+### Purpose
+
+Loads environment variables from .env files.
+
+### Example
+
+```text
+HF_TOKEN=xxxxxxxx
+```
+
+---
+
+# Source Code Modules
+
+## config.py
+
+Stores all project settings.
+
+### Responsibilities
+
+* Paths
+* Training settings
+* LoRA settings
+* Inference settings
+* Logging settings
+
+---
+
+## preprocess.py
+
+Converts raw question-answer pairs into training format.
+
+### Input
+
+```json
+{
+  "question":"What is OOP?",
+  "answer":"Object Oriented Programming"
+}
+```
+
+### Output
+
+```text
+Question:
+What is OOP?
+
+Answer:
+Object Oriented Programming
+```
+
+---
+
+## train.py
+
+Main training pipeline.
+
+### Responsibilities
+
+* Load tokenizer
+* Load model
+* Apply LoRA
+* Tokenize dataset
+* Train model
+* Save adapter
+
+---
+
+## inference.py
+
+Loads the trained model and generates answers.
+
+### Responsibilities
+
+* Load model
+* Load LoRA adapter
+* Generate responses
+
+---
+
+## evaluate.py
+
+Evaluates model performance.
+
+### Responsibilities
+
+* Generate predictions
+* Calculate ROUGE scores
+* Measure latency
+* Save evaluation reports
+
+---
+
+## utils.py
+
+Contains helper functions.
+
+### Responsibilities
+
+* Logging
+* JSON handling
+* Random seed initialization
+
+---
+
+## streamlit_app.py
+
+Frontend application.
+
+### Features
+
+* Chat interface
+* Conversation history
+* Model interaction
+
+---
+
+# LoRA Fine-Tuning
+
+LoRA stands for Low Rank Adaptation.
+
+Instead of updating all model parameters, only a small adapter is trained.
+
+### Advantages
+
+* Faster training
+* Lower memory usage
+* Smaller storage requirements
+
+---
+
+# Training Workflow
+
+```text
+Raw Dataset
+      ↓
+Preprocessing
+      ↓
+Tokenization
+      ↓
+DistilGPT2
+      ↓
+LoRA Adapter
+      ↓
+Training
+      ↓
+Save Adapter
+```
+
+---
+
+# Evaluation Workflow
+
+```text
+Questions
+      ↓
+Model Prediction
+      ↓
+Compare with Answers
+      ↓
+ROUGE Metrics
+      ↓
+Evaluation Report
+```
+
+---
+
+# Deployment Workflow
+
+```text
+User Question
+      ↓
+Streamlit UI
+      ↓
+Inference Engine
+      ↓
+DistilGPT2 + LoRA
+      ↓
+Generated Answer
+```
+
+---
+
+# How to Run
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Preprocess Dataset
+
+```bash
+python main.py preprocess
+```
+
+---
+
+## Train Model
+
+```bash
+python main.py train
+```
+
+---
+
+## Evaluate Model
+
+```bash
+python main.py evaluate
+```
+
+---
+
+## Run Chatbot
+
+```bash
+python main.py chat
+```
+
+---
+
+## Launch Streamlit App
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+---
+
+# Conclusion
+
+This project demonstrates how Small Language Models can be fine-tuned using LoRA to build domain-specific AI assistants. The Placement SLM provides placement preparation support while using significantly fewer computational resources than large language models.
